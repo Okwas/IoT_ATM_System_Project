@@ -33,10 +33,13 @@ class Color:
     black = (0, 0, 0)
     white = (255, 255, 255)
     red = (255, 0, 0)
-    green = (0, 128, 0)
+    green = (0, 255, 0)
+    blue = (0, 0, 255)
+    light_green = (0, 128, 0)
     yellow = (255, 255, 0)
 
 pixels = neopixel.NeoPixel(board.D18, 8, brightness=1.0 / 32, auto_write=False)
+
 def clear():
     pixels.show()
     pixels.fill((0, 0, 0))
@@ -44,7 +47,7 @@ def clear():
     
 def successful_reading():
     pixels.show()
-    pixels.fill(Color.green)
+    pixels.fill(Color.light_green)
     pixels.show()
 
 def failed_reading():
@@ -122,7 +125,7 @@ def oled_show():
 
 def show_card_message():
     erase_oled()
-    draw.text((25, 10), 'Przyloz', font=font, fill="WHITE")
+    draw.text((25, 10), 'Wloz', font=font, fill="WHITE")
     draw.text((30, 25), 'Karte', font=font, fill="WHITE")
     oled_show()
 
