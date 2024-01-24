@@ -1,5 +1,9 @@
 import subprocess
 
+# Custom commands to enter:
+# sudo pip3 install rpi_ws281x adafruit-circuitpython-neopixel
+# sudo python3 -m pip install --force-reinstall adafruit-blinka
+
 # Install required packages
 # ##########################
 # sudo pip install paho-mqtt
