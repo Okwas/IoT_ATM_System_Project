@@ -152,6 +152,12 @@ def show_input_pin_message():
     draw.text((30, 25), 'PIN', font=font, fill="WHITE")
     oled_show()
 
+def show_logged_in_message():
+    erase_oled()
+    draw.text((25, 10), 'Logged', font=font, fill="WHITE")
+    draw.text((30, 25), 'In', font=font, fill="WHITE")
+    oled_show()
+
 def erase_oled():
     draw.rectangle(((0, 0), (96, 64)), fill="BLACK")
     
@@ -218,6 +224,8 @@ def buttonGreenPressedCallback(channel):
     print("\nPodano poprawny PIN :>")
     successful_reading_temp()
     play_sound_success()
+    session_flag = True
+
 
 def readButtonRedPinInput():
     GPIO.add_event_detect(buttonRed, GPIO.FALLING, callback=buttonRedPressedCallback, bouncetime=200)
@@ -229,6 +237,7 @@ def readButtonGreenPinInput():
 def readCardInLoop():
     global isATMOccupied
     rfid_handler = RFIDHandler()
+    # TODO: jeśli kliknie się czerwomy to rozpoczynaj od nowa petle
     while execute:
         while not isATMOccupied:
             readCardValue = rfid_handler.read()
@@ -244,6 +253,13 @@ def readCardInLoop():
                 show_input_pin_message()
                 readButtonRedPinInput()
                 readButtonGreenPinInput()
+                # TODO: w tym miejscu logika dla poprawnie zalogowanego
+                if session_flag:
+                    erase_oled()
+                    oled_show()
+                    wait_reading()
+                    show_logged_in_message()
+
 
 def main():
     disp.Init()
