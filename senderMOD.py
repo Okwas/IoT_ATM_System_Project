@@ -243,7 +243,6 @@ def readCardInLoop():
                 readButtonGreenPinInput()
 
 def main():
-    GPIO.add_event_detect(buttonRed, GPIO.FALLING, callback=redButtonPressedCallback, bouncetime=BOUNCE_TIME)
     disp.Init()
     disp.clear()
     clear()
