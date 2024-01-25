@@ -254,6 +254,7 @@ def readCardInLoop():
                 readButtonRedPinInput()
                 readButtonGreenPinInput()
                 # TODO: w tym miejscu logika dla poprawnie zalogowanego
+                # TODO: w tym miejscu nie dzieje sie zmiana z input pin na te nową logike dla zalogowanego; naprawic
                 if session_flag:
                     erase_oled()
                     oled_show()
