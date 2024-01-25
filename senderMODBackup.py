@@ -28,8 +28,6 @@ client = mqtt.Client()
 # Thw main window with buttons to simulate the RFID card usage.
 window = tkinter.Tk()
 
-# variables global
-session_flag = False
 
 class Color:
     black = (0, 0, 0)
@@ -52,25 +50,9 @@ def successful_reading():
     pixels.fill(Color.light_green)
     pixels.show()
 
-def successful_reading_temp():
-    pixels.show()
-    pixels.fill(Color.light_green)
-    pixels.show()
-    time.sleep(3)
-    pixels.fill((0, 0, 0))
-    pixels.show()
-
 def failed_reading():
     pixels.show()
     pixels.fill(Color.red)
-    pixels.show()
-
-def failed_reading_temp():
-    pixels.show()
-    pixels.fill(Color.red)
-    pixels.show()
-    time.sleep(3)
-    pixels.fill((0, 0, 0))
     pixels.show()
 
 def wait_reading():
@@ -140,21 +122,18 @@ disp = SSD1331.SSD1331()
 def oled_show():
     disp.ShowImage(background, 0, 0)
 
-def show_input_card_message():
+
+def show_card_message():
     erase_oled()
-    draw.text((25, 10), 'Input', font=font, fill="WHITE")
-    draw.text((30, 25), 'Card', font=font, fill="WHITE")
+    draw.text((25, 10), 'Wloz', font=font, fill="WHITE")
+    draw.text((30, 25), 'Karte', font=font, fill="WHITE")
     oled_show()
 
-def show_input_pin_message():
-    erase_oled()
-    draw.text((25, 10), 'Input', font=font, fill="WHITE")
-    draw.text((30, 25), 'PIN', font=font, fill="WHITE")
-    oled_show()
 
 def erase_oled():
     draw.rectangle(((0, 0), (96, 64)), fill="BLACK")
     
+
 #uzycie przycisku, wylaczenie programu
 def redButtonPressedCallback(channel):
     global execute
@@ -183,9 +162,11 @@ def disconnect_from_broker():
     client.disconnect()
     print("Client disconnected")
 
+
 def publish_card_log(log_id, date, card_uid, reader):
     client.publish("card/info", f'{log_id}#{date}#{card_uid}#{reader}')
     print('Published card read info')
+
 
 def process_message(client, userdata, message):
     response = (str(message.payload.decode("utf-8")))
@@ -197,36 +178,12 @@ def process_message(client, userdata, message):
         failed_reading()
         play_sound_failure()
     time.sleep(1)
-    show_input_card_message()
+    show_card_message()
     clear()
     global is_waiting_for_response
     is_waiting_for_response = False
 
-def buttonRedPressedCallback(channel):
-    # TODO: obsługiwać niepoprawny login (trzeba dopisac backend funkcje login)
-    print("\nButton Red connected to GPIO " + str(channel) + " pressed.")
-    print("\nPodano NIEpoprawny PIN :<")
-    successful_reading_temp()
-    play_sound_success()
 
-def buttonGreenPressedCallback(channel):
-    # TODO: obsługiwać poprawny login (trzeba dopisac backend funkcje login)
-    print("\nButton Green connected to GPIO " + str(channel) + " pressed.")
-    print("\nPodano poprawny PIN :>")
-    failed_reading_temp()
-    play_sound_failure()
-
-def readButtonRedPinInput():
-    GPIO.add_event_detect(buttonRed, GPIO.FALLING, callback=buttonRedPressedCallback, bouncetime=200)
-
-    GPIO.add_event_detect(buttonGreen, GPIO.FALLING, callback=buttonGreenPressedCallback, bouncetime=200)
-
-    while execute:
-        print('*', end='', flush=True)
-        time.sleep(0.1)
-
-
-# main logic of ATM here
 def readCardInLoop():
     global is_waiting_for_response
     rfid_handler = RFIDHandler()
@@ -237,20 +194,18 @@ def readCardInLoop():
                 erase_oled()
                 oled_show()
                 is_waiting_for_response = True
-                successful_reading_temp()
+                wait_reading()
                 log_id, date, card_uid, reader = rfid_handler.get_data().values()
                 publish_card_log(log_id, date, card_uid, reader)
-                time.sleep(1)
-                wait_reading()
-                show_input_pin_message()
-                readButtonRedPinInput()
+                # czekanie na message od drugiej maliny
+
 
 def main():
     GPIO.add_event_detect(buttonRed, GPIO.FALLING, callback=redButtonPressedCallback, bouncetime=BOUNCE_TIME)
     disp.Init()
     disp.clear()
     clear()
-    show_input_card_message()
+    show_card_message()
     connect_to_broker()
     readCardInLoop()
     disconnect_from_broker()
