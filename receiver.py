@@ -4,6 +4,7 @@ import paho.mqtt.client as mqtt
 import tkinter
 import sqlite3
 import time
+from bankomat import *
 
 # The broker name or IP address.
 broker = "localhost"
@@ -18,22 +19,24 @@ window = tkinter.Tk()
 
 def process_message(client, userdata, message):
     # Decode message.
-    message_decoded = (str(message.payload.decode("utf-8"))).split(".")
-
-    # Print message to console.
-    if message_decoded[0] != "Client connected" and message_decoded[0] != "Client disconnected":
-        print(time.ctime() + ", " +
-                message_decoded[0] + " used the RFID card.")
-
-        # Save to sqlite database.
-        connention = sqlite3.connect("workers.db")
-        cursor = connention.cursor()
-        cursor.execute("INSERT INTO workers_log VALUES (?,?,?)",
-                        (time.ctime(), message_decoded[0], message_decoded[1]))
-        connention.commit()
-        connention.close()
+    message_decoded = (str(message.payload.decode("utf-8"))).split(",")
+    action = message_decoded[0]
+    argument = message_decoded[1]
+    if action == "login":
+        login(argument)
+    elif action == "check_balance":
+        check_balance()
+    elif action == "deposit":
+        deposit(float(argument))
+    elif action == "withdraw":
+        withdraw(float(argument))
+    elif action == "input_pin":
+        input_pin(bool(argument))
     else:
-        print(message_decoded[0] + " : " + message_decoded[1])
+        logout()
+
+    print(message_decoded)
+
 
 
 def print_log_to_window():
@@ -79,12 +82,16 @@ def connect_to_broker():
     # Starts client and subscribe.
     client.loop_start()
     client.subscribe("worker/name")
+    client.subscribe("login")
 
 
 def disconnect_from_broker():
     # Disconnet the client.
     client.loop_stop()
     client.disconnect()
+
+
+
 
 
 def run_receiver():
