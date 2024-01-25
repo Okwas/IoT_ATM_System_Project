@@ -129,7 +129,7 @@ def play_sound_failure():
     GPIO.output(buzzerPin, GPIO.LOW)
 
 execute = True
-is_waiting_for_response = False
+isATMOccupied = False
 
 # OLED
 background = Image.new("RGB", (96, 64), "BLACK")
@@ -187,6 +187,7 @@ def publish_card_log(log_id, date, card_uid, reader):
     client.publish("card/info", f'{log_id}#{date}#{card_uid}#{reader}')
     print('Published card read info')
 
+# TODO: to prawdopodobnie nie jest potrzebne w tej formie, ale można to przerobić do naszych potrzeb jessl
 def process_message(client, userdata, message):
     response = (str(message.payload.decode("utf-8")))
     print(f'response: {response}')
@@ -199,22 +200,24 @@ def process_message(client, userdata, message):
     time.sleep(1)
     show_input_card_message()
     clear()
-    global is_waiting_for_response
-    is_waiting_for_response = False
+    global isATMOccupied
+    isATMOccupied = False
 
 def buttonRedPressedCallback(channel):
     # TODO: obsługiwać niepoprawny login (trzeba dopisac backend funkcje login)
     print("\nButton Red connected to GPIO " + str(channel) + " pressed.")
     print("\nPodano NIEpoprawny PIN :<")
-    successful_reading_temp()
-    play_sound_success()
+    failed_reading_temp()
+    play_sound_failure()
+    global execute
+    execute = False
 
 def buttonGreenPressedCallback(channel):
     # TODO: obsługiwać poprawny login (trzeba dopisac backend funkcje login)
     print("\nButton Green connected to GPIO " + str(channel) + " pressed.")
     print("\nPodano poprawny PIN :>")
-    failed_reading_temp()
-    play_sound_failure()
+    successful_reading_temp()
+    play_sound_success()
 
 def readButtonRedPinInput():
     GPIO.add_event_detect(buttonRed, GPIO.FALLING, callback=buttonRedPressedCallback, bouncetime=200)
@@ -224,15 +227,15 @@ def readButtonGreenPinInput():
 
 # main logic of ATM here
 def readCardInLoop():
-    global is_waiting_for_response
+    global isATMOccupied
     rfid_handler = RFIDHandler()
     while execute:
-        while not is_waiting_for_response:
+        while not isATMOccupied:
             readCardValue = rfid_handler.read()
             if readCardValue:
                 erase_oled()
                 oled_show()
-                is_waiting_for_response = True
+                isATMOccupied = True
                 successful_reading_temp()
                 log_id, date, card_uid, reader = rfid_handler.get_data().values()
                 publish_card_log(log_id, date, card_uid, reader)
