@@ -219,12 +219,8 @@ def buttonGreenPressedCallback(channel):
 def readButtonRedPinInput():
     GPIO.add_event_detect(buttonRed, GPIO.FALLING, callback=buttonRedPressedCallback, bouncetime=200)
 
+def readButtonGreenPinInput():
     GPIO.add_event_detect(buttonGreen, GPIO.FALLING, callback=buttonGreenPressedCallback, bouncetime=200)
-
-    while execute:
-        print('*', end='', flush=True)
-        time.sleep(0.1)
-
 
 # main logic of ATM here
 def readCardInLoop():
@@ -244,6 +240,7 @@ def readCardInLoop():
                 wait_reading()
                 show_input_pin_message()
                 readButtonRedPinInput()
+                readButtonGreenPinInput()
 
 def main():
     GPIO.add_event_detect(buttonRed, GPIO.FALLING, callback=redButtonPressedCallback, bouncetime=BOUNCE_TIME)
@@ -255,7 +252,6 @@ def main():
     readCardInLoop()
     disconnect_from_broker()
     GPIO.cleanup()
-
 
 if __name__ == "__main__":
     main()
