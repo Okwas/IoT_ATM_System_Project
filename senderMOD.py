@@ -30,6 +30,7 @@ window = tkinter.Tk()
 
 # variables global
 session_flag = False
+should_retry_loop = True
 
 class Color:
     black = (0, 0, 0)
@@ -233,11 +234,13 @@ def readButtonRedPinInput():
 def readButtonGreenPinInput():
     GPIO.add_event_detect(buttonGreen, GPIO.FALLING, callback=buttonGreenPressedCallback, bouncetime=200)
 
+def logout():
+    should_retry_loop = False
+
 # main logic of ATM here
 def readCardInLoop():
     global isATMOccupied
     rfid_handler = RFIDHandler()
-    # TODO: jeśli kliknie się czerwomy to rozpoczynaj od nowa petle
     while execute:
         while not isATMOccupied:
             readCardValue = rfid_handler.read()
@@ -268,7 +271,8 @@ def main():
     clear()
     show_input_card_message()
     connect_to_broker()
-    readCardInLoop()
+    while should_retry_loop: # po kliknieciu czerwonego powinno od nowa sie rozpoczac petle
+        readCardInLoop()
     disconnect_from_broker()
     GPIO.cleanup()
 
