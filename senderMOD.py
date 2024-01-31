@@ -211,7 +211,6 @@ def process_message(client, userdata, message):
     isATMOccupied = False
 
 def buttonRedPressedCallback(channel):
-    # TODO: obsługiwać niepoprawny login (trzeba dopisac backend funkcje login)
     print("\nButton Red connected to GPIO " + str(channel) + " pressed.")
     print("\nPodano NIEpoprawny PIN :<")
     failed_reading_temp()
@@ -220,11 +219,11 @@ def buttonRedPressedCallback(channel):
     execute = False
 
 def buttonGreenPressedCallback(channel):
-    # TODO: obsługiwać poprawny login (trzeba dopisac backend funkcje login)
     print("\nButton Green connected to GPIO " + str(channel) + " pressed.")
     print("\nPodano poprawny PIN :>")
     successful_reading_temp()
     play_sound_success()
+    global session_flag
     session_flag = True
 
 
@@ -234,8 +233,18 @@ def readButtonRedPinInput():
 def readButtonGreenPinInput():
     GPIO.add_event_detect(buttonGreen, GPIO.FALLING, callback=buttonGreenPressedCallback, bouncetime=200)
 
-def logout():
+def buttonRedLogout(channel):
+    print("\nButton Red connected to GPIO " + str(channel) + " pressed.")
+    print("\nWylogowano z bankomatu")
+    successful_reading_temp()
+    play_sound_success()
+    global should_retry_loop
     should_retry_loop = False
+
+# logout functionality
+def readButtonRedWaitForLogout():
+    GPIO.add_event_detect(buttonRed, GPIO.FALLING, callback=buttonRedLogout, bouncetime=200)
+
 
 # main logic of ATM here
 def readCardInLoop():
@@ -258,6 +267,7 @@ def readCardInLoop():
                 readButtonGreenPinInput()
                 # TODO: w tym miejscu logika dla poprawnie zalogowanego
                 # TODO: w tym miejscu nie dzieje sie zmiana z input pin na te nową logike dla zalogowanego; naprawic
+                # TODO: problem żeby naprawic to :<
                 if session_flag:
                     erase_oled()
                     oled_show()
@@ -271,10 +281,14 @@ def main():
     clear()
     show_input_card_message()
     connect_to_broker()
-    while should_retry_loop: # po kliknieciu czerwonego powinno od nowa sie rozpoczac petle
+    while should_retry_loop: # po kliknieciu czerwonego nie kończzy się program
         readCardInLoop()
-    disconnect_from_broker()
-    GPIO.cleanup()
+
+    if should_retry_loop:
+        readCardInLoop()
+    if not should_retry_loop:
+        disconnect_from_broker()
+        GPIO.cleanup()
 
 if __name__ == "__main__":
     main()
