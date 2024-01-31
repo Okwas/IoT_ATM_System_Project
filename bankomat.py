@@ -137,7 +137,7 @@ def logout(ATM):
 
 
 
-# Tu se wpisujesz komendy, np login(123), input_pin(True), check_balance()
+# Tu sobie wpisujesz komendy, np login(123), input_pin(True), check_balance()
 if __name__ == "__main__":
     print("Welcome to the interactive bank script!")
     print("Available functions: create_account, is_logged_in, login, input_pin, check_balance, withdraw, deposit, logout")
