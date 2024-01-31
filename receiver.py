@@ -7,8 +7,8 @@ import time
 from bankomat import *
 
 # The broker name or IP address.
-broker = "localhost"
-# broker = "127.0.0.1"
+# broker = "localhost"
+broker = "127.0.0.1"
 # broker = "10.0.0.1"
 
 # The MQTT client.
@@ -20,22 +20,24 @@ window = tkinter.Tk()
 def process_message(client, userdata, message):
     # Decode message.
     message_decoded = (str(message.payload.decode("utf-8"))).split(",")
+    print(message_decoded)
     action = message_decoded[0]
     argument = message_decoded[1]
-    if action == "login":
-        login(argument)
-    elif action == "check_balance":
-        check_balance()
-    elif action == "deposit":
-        deposit(float(argument))
-    elif action == "withdraw":
-        withdraw(float(argument))
-    elif action == "input_pin":
-        input_pin(bool(argument))
-    else:
-        logout()
+    if len(message_decoded)>2:
+        atm = message_decoded[2]
+        if action == "login":
+            login(argument,atm)
+        elif action == "check_balance":
+            check_balance(atm)
+        elif action == "deposit":
+            deposit(float(argument),atm)
+        elif action == "withdraw":
+            withdraw(float(argument),atm)
+        elif action == "input_pin":
+            input_pin(bool(argument),atm)
+        else:
+            logout(atm)
 
-    print(message_decoded)
 
 
 
@@ -75,7 +77,6 @@ def create_main_window():
 
 
 def connect_to_broker():
-    # Connect to the broker.
     client.connect(broker)
     # Send message about conenction.
     client.on_message = process_message

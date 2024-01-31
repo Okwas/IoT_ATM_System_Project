@@ -6,7 +6,7 @@ import tkinter
 from bankomat import *
 
 # The terminal ID - can be any string.
-terminal_id = "T1"
+terminal_id = "t0"
 # The broker name or IP address.
 broker = "localhost"
 # broker = "127.0.0.1"
