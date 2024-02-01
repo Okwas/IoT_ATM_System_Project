@@ -245,7 +245,6 @@ def buttonRedLogout(channel):
 def readButtonRedWaitForLogout():
     GPIO.add_event_detect(buttonRed, GPIO.FALLING, callback=buttonRedLogout, bouncetime=200)
 
-
 # main logic of ATM here
 def readCardInLoop():
     global isATMOccupied
