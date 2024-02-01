@@ -185,7 +185,6 @@ def connect_to_broker():
 
 
 def disconnect_from_broker():
-    # Disconnet the client.
     client.loop_stop()
     client.disconnect()
     print("Client disconnected")
