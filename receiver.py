@@ -17,6 +17,10 @@ client = mqtt.Client()
 # Thw main window.
 window = tkinter.Tk()
 
+
+def return_to_client(action,terminal_id):
+    client.publish("serwer/name", action+","+str(terminal_id))
+
 def process_message(client, userdata, message):
     # Decode message.
     message_decoded = (str(message.payload.decode("utf-8"))).split(",")
@@ -26,15 +30,20 @@ def process_message(client, userdata, message):
     if len(message_decoded)>2:
         atm = message_decoded[2]
         if action == "login":
-            login(argument,atm)
+            
+            return_to_client(login(argument,atm),atm)
         elif action == "check_balance":
-            check_balance(atm)
+            
+            return_to_client(str(check_balance(atm)),atm)
         elif action == "deposit":
-            deposit(float(argument),atm)
+            
+            return_to_client(deposit(float(argument),atm),atm)
         elif action == "withdraw":
-            withdraw(float(argument),atm)
+            
+            return_to_client(withdraw(float(argument),atm),atm)
         elif action == "input_pin":
-            input_pin(bool(argument),atm)
+            
+            return_to_client(input_pin(bool(argument),atm),atm)
         else:
             logout(atm)
 

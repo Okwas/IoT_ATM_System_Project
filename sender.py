@@ -6,7 +6,7 @@ import tkinter
 from bankomat import *
 
 # The terminal ID - can be any string.
-terminal_id = "t0"
+terminal_id = "2"
 # The broker name or IP address.
 broker = "localhost"
 # broker = "127.0.0.1"
@@ -75,10 +75,25 @@ def get_float(entry):
     except ValueError:
         messagebox.showerror("Error", "Please enter a valid float.")
         return 0
+    
+
+def process_message(client, userdata, message):
+    # Decode message.
+    message_decoded = (str(message.payload.decode("utf-8"))).split(",")
+    message = message_decoded[0]
+    id = message_decoded[1]
+    if(id==terminal_id):
+        print(message_decoded)
+    
+
+
 
 def connect_to_broker():
     # Connect to the broker.
     client.connect(broker)
+    client.on_message = process_message
+    client.loop_start()
+    client.subscribe("serwer/name")
     # Send message about conenction.
     call_worker("Client connected")
 
