@@ -1,6 +1,5 @@
 import sqlite3
 
-
 session_client = {
     "1": "",
     "2": "",
@@ -12,12 +11,8 @@ session_flag = {
     "3": False
 }
 
-
-
-# potrzebna bedzie zmienna z aktualnym bankomatem
-
-
-# Sprawdzenie, czy konto istanieje
+# Potrzebna bedzie zmienna z aktualnym bankomatem
+# Sprawdzenie, czy konto istnieje
 def account_exists(RFID):
     connection = sqlite3.connect("bankomaty.db")
     cursor = connection.cursor()
@@ -29,7 +24,6 @@ def account_exists(RFID):
 
     return count > 0
 
-
 # Tworzenie konta
 def create_account(RFID):
     connection = sqlite3.connect("bankomaty.db")
@@ -39,14 +33,11 @@ def create_account(RFID):
 
     connection.close()
 
-
 # Sprawdzenie czy jest zalogowany użytkownik
 def is_logged_in(ATM):
     global session_client
     global session_flag
     return session_client[ATM] != "" and session_flag[ATM]
-
-
 
 # Sprawdza, czy któryś bankomat obsługuje już dane konto
 def is_card_in_use(RFID):
@@ -54,9 +45,6 @@ def is_card_in_use(RFID):
         if card == RFID:
             return True
     return False
-
-
-
 
 # Loguje
 def login(RFID,ATM):
@@ -70,17 +58,14 @@ def login(RFID,ATM):
     else:
         return("Card already in use")
 
-
 def input_pin(isCorrect,ATM):
     if isCorrect:
         global session_flag
         session_flag[ATM] = True
         return "true"
     else:
-        # Buzzer
         return None
     
-
 def check_balance(ATM):
     if is_logged_in(ATM):
             connection = sqlite3.connect("bankomaty.db")
@@ -91,9 +76,6 @@ def check_balance(ATM):
             print(f"Balance for account {session_client[ATM]}: {balance}")
             return balance
         
-
-    
-
 def deposit(amount, ATM):
     if is_logged_in(ATM):
         connection = sqlite3.connect("bankomaty.db")
@@ -113,11 +95,6 @@ def deposit(amount, ATM):
             connection.close()
             return("Invalid deposit amount or insufficient funds in ATM.")
         
-        
-
-
-
-
 def withdraw(amount, ATM):
     if is_logged_in(ATM):
         connection = sqlite3.connect("bankomaty.db")
@@ -139,16 +116,12 @@ def withdraw(amount, ATM):
             connection.close()
             return("Invalid withdrawal amount or insufficient funds or ATM balance.")
         
-
-
-# Tu trzeba bedzie nasłuchiwanie dodać
 def logout(ATM):
     if is_logged_in(ATM):
         global session_client
         global session_flag
         session_client[ATM] = ""
         session_flag[ATM] = False
-
 
 def check_atm_balance(ATM):
     connection = sqlite3.connect("bankomaty.db")
@@ -161,8 +134,7 @@ def check_atm_balance(ATM):
 
     return atm_balance
 
-
-# Tu se wpisujesz komendy, np login(123), input_pin(True), check_balance()
+# Tu sobie wpisujesz komendy, np login(123), input_pin(True), check_balance()
 if __name__ == "__main__":
     print("Welcome to the interactive bank script!")
     print("Available functions: create_account, is_logged_in, login, input_pin, check_balance, withdraw, deposit, logout")
