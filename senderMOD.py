@@ -173,7 +173,6 @@ broker = "localhost"
 # broker = "127.0.0.1"
 # broker = "10.0.0.1"
 
-
 def connect_to_broker():
     # Connect to the broker.
     client.connect(broker)
@@ -182,7 +181,6 @@ def connect_to_broker():
     # Starts client and subscribe.
     client.loop_start()
     client.subscribe("card/response")
-
 
 def disconnect_from_broker():
     client.loop_stop()
@@ -193,7 +191,6 @@ def publish_card_log(log_id, date, card_uid, reader):
     client.publish("card/info", f'{log_id}#{date}#{card_uid}#{reader}')
     print('Published card read info')
 
-# TODO: to prawdopodobnie nie jest potrzebne w tej formie, ale można to przerobić do naszych potrzeb jessl
 def process_message(client, userdata, message):
     response = (str(message.payload.decode("utf-8")))
     print(f'response: {response}')
@@ -263,15 +260,11 @@ def readCardInLoop():
                 show_input_pin_message()
                 readButtonRedPinInput()
                 readButtonGreenPinInput()
-                # TODO: w tym miejscu logika dla poprawnie zalogowanego
-                # TODO: w tym miejscu nie dzieje sie zmiana z input pin na te nową logike dla zalogowanego; naprawic
-                # TODO: problem żeby naprawic to :<
                 if session_flag:
                     erase_oled()
                     oled_show()
                     wait_reading()
                     show_logged_in_message()
-
 
 def main():
     disp.Init()
@@ -279,9 +272,8 @@ def main():
     clear()
     show_input_card_message()
     connect_to_broker()
-    while should_retry_loop: # po kliknieciu czerwonego nie kończzy się program
+    while should_retry_loop:
         readCardInLoop()
-
     if should_retry_loop:
         readCardInLoop()
     if not should_retry_loop:

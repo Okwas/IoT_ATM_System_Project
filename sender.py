@@ -24,15 +24,12 @@ def call_action(action,argument):
 def call_worker(action):
     client.publish("worker/name", action +"," + terminal_id,)
 
-
-
 def create_main_window():
     window.geometry("400x200")
     window.title("SENDER")
 
     intro_label = tkinter.Label(window, text="Bankomat")
     intro_label.grid(row=0, column=0, columnspan=2)
-
 
     entry1 = create_entry(window)
     button1 = tkinter.Button(window, text="Login", command=lambda: call_action("login",get_int(entry1)))
@@ -76,7 +73,6 @@ def get_float(entry):
         messagebox.showerror("Error", "Please enter a valid float.")
         return 0
     
-
 def process_message(client, userdata, message):
     # Decode message.
     message_decoded = (str(message.payload.decode("utf-8"))).split(",")
@@ -85,9 +81,6 @@ def process_message(client, userdata, message):
     if(id==terminal_id):
         print(message_decoded)
     
-
-
-
 def connect_to_broker():
     # Connect to the broker.
     client.connect(broker)
@@ -113,7 +106,6 @@ def run_sender():
     window.mainloop()
 
     disconnect_from_broker()
-
 
 if __name__ == "__main__":
     run_sender()

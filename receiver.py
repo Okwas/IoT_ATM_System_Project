@@ -17,7 +17,6 @@ client = mqtt.Client()
 # Thw main window.
 window = tkinter.Tk()
 
-
 def return_to_client(action,terminal_id):
     client.publish("serwer/name", action+","+str(terminal_id))
 
@@ -47,9 +46,6 @@ def process_message(client, userdata, message):
         else:
             logout(atm)
 
-
-
-
 def print_log_to_window():
     connention = sqlite3.connect("workers.db")
     cursor = connention.cursor()
@@ -71,7 +67,6 @@ def print_log_to_window():
     # Display this window.
     print_log_window.mainloop()
 
-
 def create_main_window():
     window.geometry("250x100")
     window.title("RECEIVER")
@@ -84,7 +79,6 @@ def create_main_window():
     exit_button.pack(side="right")
     print_log_button.pack(side="right")
 
-
 def connect_to_broker():
     client.connect(broker)
     # Send message about conenction.
@@ -94,15 +88,10 @@ def connect_to_broker():
     client.subscribe("worker/name")
     client.subscribe("login")
 
-
 def disconnect_from_broker():
     # Disconnet the client.
     client.loop_stop()
     client.disconnect()
-
-
-
-
 
 def run_receiver():
     connect_to_broker()
